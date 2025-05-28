@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Garden Monitoring</title>
+    <style>
+        body {
+            background-image: url('latar.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+        }
+        .title-container {
+            background-color: rgba(0, 128, 0, 0.9);
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(42, 42, 59, 0.9);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 100%;
+        }
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .gauge {
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #3b3b4f 0%, #4a4a65 100%);
+            border: 2px solid #444;
+            font-size: 18px;
+        }
+        .gauge-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #4CAF50;
+        }
+        .error-value {
+            color: #F44336;
+        }
+        .control-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(68, 68, 68, 0.7);
+        }
+        .switch-mode {
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .manual-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .auto-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        .active-mode {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .control-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+        .device-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .device-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        .btn-on {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-off {
+            background-color: #dc3545;
+            color: white;
+        }
+        .time-input {
+            display: flex;
+            align-items: center;
+        }
+        .time-input input {
+            width: 50px;
+            padding: 5px;
+            margin-left: 5px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+            text-align: center;
+        }
+        .mode-indicator {
+            height: 8px;
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 10px;
+            background-color: #6c757d;
+        }
+        .indicator-manual {
+            background-color: #28a745;
+        }
+        .indicator-auto {
+            background-color: #dc3545;
+        }
+        .status-text {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #aaa;
+        }
+        @media (max-width: 600px) {
+            .sensor-grid {
+                grid-template-columns: 1fr;
+            }
+            .control-row {
+                flex-direction: column;
+            }
+            .device-control {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title-container">
+            <h1 class="title">SMART GARDEN MONITORING</h1>
+        </div>
+        
+        <div class="container">
+            <div class="sensor-grid">
+                <div class="gauge">
+                    Nitrogen (N): 
+                    <div id="n-value" class="gauge-value">--</div>
+                </div>
+                <div class="gauge">
+                    Phosphorus (P): 
+                    <div id="p-value" class="gauge-value">--</div>
+                </div>
+                <div class="gauge">
+                    Potassium (K): 
+                    <div id="k-value" class="gauge-value">--</div>
+                </div>
+                <div class="gauge">
+                    Temperature: 
+                    <div id="temp-value" class="gauge-value">-- °C</div>
+                </div>
+                <div class="gauge">
+                    Humidity: 
+                    <div id="hum-value" class="gauge-value">-- %</div>
+                </div>
+                <div class="gauge">
+                    Soil Moisture: 
+                    <div id="soil-value" class="gauge-value">-- %</div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="switch-mode">
+                    <button id="manualBtn" class="mode-btn manual-btn active-mode">MANUAL</button>
+                    <button id="autoBtn" class="mode-btn auto-btn">AUTO</button>
+                    <div id="modeIndicator" class="mode-indicator indicator-manual"></div>
+                    <div class="status-text">Current Mode: <span id="currentModeText">MANUAL</span></div>
+                </div>
+                
+                <div class="control-row">
+                    <div class="device-control">
+                        <button id="pumpBtn" class="device-btn btn-off" onclick="toggleDevice('pump')">PUMP OFF</button>
+                        <div class="time-input">
+                            Duration: 
+                            <input id="pumpTime" type="number" min="0" max="120" value="5"> min
+                        </div>
+                    </div>
+                    
+                    <div class="device-control">
+                        <button id="fanBtn" class="device-btn btn-off" onclick="toggleDevice('fan')">FAN OFF</button>
+                        <div class="time-input">
+                            Duration: 
+                            <input id="fanTime" type="number" min="0" max="120" value="5"> min
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mode Control
+        document.getElementById('manualBtn').addEventListener('click', function() {
+            setMode('manual');
+        });
+        
+        document.getElementById('autoBtn').addEventListener('click', function() {
+            setMode('auto');
+        });
+        
+        function setMode(mode) {
+            const manualBtn = document.getElementById('manualBtn');
+            const autoBtn = document.getElementById('autoBtn');
+            const indicator = document.getElementById('modeIndicator');
+            const modeText = document.getElementById('currentModeText');
+            
+            if (mode === 'manual') {
+                manualBtn.classList.add('active-mode');
+                manualBtn.classList.remove('manual-btn');
+                manualBtn.classList.add('manual-btn');
+                
+                autoBtn.classList.remove('active-mode');
+                autoBtn.classList.remove('auto-btn');
+                autoBtn.classList.add('auto-btn');
+                
+                indicator.className = 'mode-indicator indicator-manual';
+                modeText.textContent = 'MANUAL';
+                
+                // Enable controls
+                document.getElementById('pumpBtn').disabled = false;
+                document.getElementById('fanBtn').disabled = false;
+                document.getElementById('pumpTime').disabled = false;
+                document.getElementById('fanTime').disabled = false;
+                
+                // Send mode to server
+                fetch('/api/setmode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'mode=manual'
+                });
+                
+            } else {
+                manualBtn.classList.remove('active-mode');
+                manualBtn.classList.remove('manual-btn');
+                manualBtn.classList.add('manual-btn');
+                
+                autoBtn.classList.add('active-mode');
+                autoBtn.classList.remove('auto-btn');
+                autoBtn.classList.add('auto-btn');
+                
+                indicator.className = 'mode-indicator indicator-auto';
+                modeText.textContent = 'AUTO';
+                
+                // Disable controls
+                document.getElementById('pumpBtn').disabled = true;
+                document.getElementById('fanBtn').disabled = true;
+                document.getElementById('pumpTime').disabled = true;
+                document.getElementById('fanTime').disabled = true;
+                
+                // Turn off devices when switching to auto
+                setDeviceStatus('pump', false);
+                setDeviceStatus('fan', false);
+                
+                // Send mode to server
+                fetch('/api/setmode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'mode=auto'
+                });
+            }
+        }
+        
+        // Device Control
+        function toggleDevice(device) {
+            const btn = document.getElementById(device + 'Btn');
+            const isOn = btn.classList.contains('btn-on');
+            
+            if (isOn) {
+                setDeviceStatus(device, false);
+            } else {
+                const minutes = parseInt(document.getElementById(device + 'Time').value);
+                setDeviceStatus(device, true, minutes);
+            }
+        }
+        
+        function setDeviceStatus(device, status, minutes = 0) {
+            const btn = document.getElementById(device + 'Btn');
+            
+            if (status) {
+                btn.classList.remove('btn-off');
+                btn.classList.add('btn-on');
+                btn.textContent = device.toUpperCase() + ' ON';
+                
+                // Send command to server
+                fetch('/api/set' + device, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'state=on'
+                });
+                
+                if (minutes > 0) {
+                    fetch('/api/set' + device + 'time', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'time=' + minutes
+                    });
+                }
+            } else {
+                btn.classList.remove('btn-on');
+                btn.classList.add('btn-off');
+                btn.textContent = device.toUpperCase() + ' OFF';
+                
+                // Send command to server
+                fetch('/api/set' + device, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'state=off'
+                });
+            }
+        }
+        
+        // Sensor Data Updates
+        function updateSensorData() {
+            fetch('/api/sensor')
+                .then(response => response.json())
+                .then(data => {
+                    // Update sensor values
+                    document.getElementById('n-value').textContent = data.nitrogen || '--';
+                    document.getElementById('p-value').textContent = data.phosphorus || '--';
+                    document.getElementById('k-value').textContent = data.potassium || '--';
+                    
+                    document.getElementById('temp-value').textContent = 
+                        data.temperature !== -1 ? data.temperature.toFixed(1) + ' °C' : '--';
+                    document.getElementById('hum-value').textContent = 
+                        data.humidity !== -1 ? data.humidity.toFixed(1) + ' %' : '--';
+                    document.getElementById('soil-value').textContent = 
+                        data.moisture !== -1 ? data.moisture + ' %' : '--';
+                    
+                    // Highlight error values
+                    if (data.tempHumidError) {
+                        document.getElementById('temp-value').classList.add('error-value');
+                        document.getElementById('hum-value').classList.add('error-value');
+                    } else {
+                        document.getElementById('temp-value').classList.remove('error-value');
+                        document.getElementById('hum-value').classList.remove('error-value');
+                    }
+                    
+                    if (data.soilError) {
+                        document.getElementById('soil-value').classList.add('error-value');
+                    } else {
+                        document.getElementById('soil-value').classList.remove('error-value');
+                    }
+                    
+                    if (data.npkError) {
+                        document.getElementById('n-value').classList.add('error-value');
+                        document.getElementById('p-value').classList.add('error-value');
+                        document.getElementById('k-value').classList.add('error-value');
+                    } else {
+                        document.getElementById('n-value').classList.remove('error-value');
+                        document.getElementById('p-value').classList.remove('error-value');
+                        document.getElementById('k-value').classList.remove('error-value');
+                    }
+                    
+                    // Update device status
+                    setDeviceStatus('pump', data.pumpStatus);
+                    setDeviceStatus('fan', data.fanStatus);
+                    
+                    // Update mode
+                    if (data.autoMode) {
+                        setMode('auto');
+                    } else {
+                        setMode('manual');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sensor data:', error);
+                });
+        }
+        
+        // Update data every 2 seconds
+        setInterval(updateSensorData, 2000);
+        updateSensorData(); // Initial update
+    </script>
+</body>
+</html>
