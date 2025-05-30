@@ -4,176 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Garden Monitoring</title>
-    <style>
-        body {
-            background-image: url('latar.png');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
-        }
-        .title-container {
-            background-color: rgba(0, 128, 0, 0.9);
-            border-radius: 10px;
-            padding: 15px 30px;
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .title {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .container {
-            background-color: rgba(42, 42, 59, 0.9);
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 100%;
-        }
-        .sensor-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .gauge {
-            padding: 15px;
-            border-radius: 10px;
-            background: linear-gradient(180deg, #3b3b4f 0%, #4a4a65 100%);
-            border: 2px solid #444;
-            font-size: 18px;
-        }
-        .gauge-value {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 5px;
-            color: #4CAF50;
-        }
-        .error-value {
-            color: #F44336;
-        }
-        .control-section {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            background-color: rgba(68, 68, 68, 0.7);
-        }
-        .switch-mode {
-            margin-bottom: 15px;
-        }
-        .mode-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .manual-btn {
-            background-color: #28a745;
-            color: white;
-        }
-        .auto-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        .active-mode {
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        .control-row {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
-        }
-        .device-control {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0 10px;
-        }
-        .device-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 10px;
-            min-width: 120px;
-            transition: all 0.3s;
-        }
-        .btn-on {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-off {
-            background-color: #dc3545;
-            color: white;
-        }
-        .time-input {
-            display: flex;
-            align-items: center;
-        }
-        .time-input input {
-            width: 50px;
-            padding: 5px;
-            margin-left: 5px;
-            border-radius: 5px;
-            border: 1px solid #444;
-            background-color: #333;
-            color: white;
-            text-align: center;
-        }
-        .mode-indicator {
-            height: 8px;
-            width: 100%;
-            border-radius: 4px;
-            margin-top: 10px;
-            background-color: #6c757d;
-        }
-        .indicator-manual {
-            background-color: #28a745;
-        }
-        .indicator-auto {
-            background-color: #dc3545;
-        }
-        .status-text {
-            font-size: 14px;
-            margin-top: 5px;
-            color: #aaa;
-        }
-        @media (max-width: 600px) {
-            .sensor-grid {
-                grid-template-columns: 1fr;
-            }
-            .control-row {
-                flex-direction: column;
-            }
-            .device-control {
-                margin: 10px 0;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="wrapper">
@@ -208,7 +39,14 @@
                     <div id="soil-value" class="gauge-value">-- %</div>
                 </div>
             </div>
-            
+            <div class="plant-health">
+                <div class="health-indicator">
+                    <div id="health-status" class="health-status health-good">Sehat</div>
+                    <div class="health-icon">🌿</div>
+                </div>
+                <div id="health-message" class="health-message">Tanaman dalam kondisi baik</div>
+            </div>
+
             <div class="control-section">
                 <div class="switch-mode">
                     <button id="manualBtn" class="mode-btn manual-btn active-mode">MANUAL</button>
